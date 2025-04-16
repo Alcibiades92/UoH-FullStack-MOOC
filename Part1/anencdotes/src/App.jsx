@@ -13,25 +13,35 @@ const App = () => {
   ];
 
   const [selected, setSelected] = useState(0);
+  const [votes, setVotes] = useState(new Array(anecdotes.length).fill(0));
+
+  // console.log(votes);
   const handleClick = () => {
     const randomNumber = Math.floor(Math.random() * anecdotes.length);
     // console.log(randomNumber);
 
     setSelected(randomNumber);
   };
+  const handleVote = () => {
+    const newVotes = [...votes];
+    newVotes[selected] += 1;
+    setVotes([...newVotes]);
+    // console.log(newVotes);
+  };
 
   return (
     <div>
       {anecdotes[selected]}
-      <Button onClick={handleClick} />
+      <Button onClick={handleClick} text="Next epic one liner" />
+      <Button onClick={handleVote} text="Vote!" />
     </div>
   );
 };
 
-const Button = ({ onClick }) => {
+const Button = ({ onClick, text }) => {
   return (
     <div>
-      <button onClick={onClick}>Random epic one liner</button>
+      <button onClick={onClick}>{text}</button>
     </div>
   );
 };
