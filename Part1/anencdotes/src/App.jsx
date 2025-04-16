@@ -30,11 +30,17 @@ const App = () => {
   };
 
   return (
-    <div>
-      {anecdotes[selected]}
-      <Button onClick={handleClick} text="Next epic one liner" />
-      <Button onClick={handleVote} text="Vote!" />
-    </div>
+    <>
+      <div>
+        {anecdotes[selected]}
+        <p>Voted {votes[selected]} times</p>
+        <Button onClick={handleClick} text="Next epic one liner" />
+        <Button onClick={handleVote} text="Vote!" />
+      </div>
+      <div>
+        <MostVoted votes={votes} anecdotes={anecdotes} />
+      </div>
+    </>
   );
 };
 
@@ -46,3 +52,17 @@ const Button = ({ onClick, text }) => {
   );
 };
 export default App;
+
+const MostVoted = ({ votes, anecdotes }) => {
+  const mostVoted = votes.indexOf(Math.max(...votes));
+  // console.log(mostVoted, Math.max(...votes));
+  if (Math.max(...votes) === 0) return <p>Please vote!</p>;
+  return (
+    <>
+      <p>Max votes : {Math.max(...votes)}</p>
+      <p>
+        Anencdote with the most votes : <span>{anecdotes[mostVoted]}</span>
+      </p>
+    </>
+  );
+};
