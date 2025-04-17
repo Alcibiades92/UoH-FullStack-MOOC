@@ -1,5 +1,3 @@
-const Total = (props) => <p>Number of exercises {props.total}</p>;
-
 const App = () => {
   const course = {
     id: 1,
@@ -31,6 +29,7 @@ const Course = ({ course }) => {
     <>
       <Header title={course.name} />
       <Content parts={course.parts} />
+      <Total parts={course.parts} />
     </>
   );
 };
@@ -56,6 +55,14 @@ const Part = ({ part }) => {
         {part.name} : {part.exercises}
       </p>
     </li>
+  );
+};
+
+const Total = ({ parts }) => {
+  return (
+    <p>
+      Total exercises : {parts.reduce((acc, part) => acc + part.exercises, 0)}
+    </p>
   );
 };
 export default App;
