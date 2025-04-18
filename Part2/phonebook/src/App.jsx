@@ -1,15 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Persons from "./components/Persons.jsx";
 import PersonForm from "./components/PersonForm.jsx";
+import axios from "axios";
 
 const App = () => {
-  const initial = [
-    { name: "Arto Hellas", number: "040-123456", id: 1 },
-    { name: "Ada Lovelace", number: "39-44-5323523", id: 2 },
-    { name: "Dan Abramov", number: "12-43-234345", id: 3 },
-    { name: "Mary Poppendieck", number: "39-23-6423122", id: 4 },
-  ];
-  const [persons, setPersons] = useState(initial);
+  const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [inputFilter, setInputFilter] = useState("");
@@ -34,6 +29,14 @@ const App = () => {
     setNewName("");
     setNewNumber("");
   };
+  // useEffect(hook, []);
+  const hook = () => {
+    const promise = axios.get("http://localhost:3002/persons");
+    promise.then((response) => {
+      setPersons(response.data);
+    });
+  };
+  useEffect(hook, []);
 
   return (
     <div>
