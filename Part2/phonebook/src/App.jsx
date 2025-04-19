@@ -3,12 +3,15 @@ import Persons from "./components/Persons.jsx";
 import PersonForm from "./components/PersonForm.jsx";
 // import axios from "axios";
 import requests from "./services/requests.js";
+import "./index.css";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [inputFilter, setInputFilter] = useState("");
+  const [message, setMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
   const handleInputFilter = (event) => {
     setInputFilter(event.target.value.toLowerCase());
     // const lower = inputFilter.toLowerCase();
@@ -21,7 +24,7 @@ const App = () => {
   };
   const handleSubmit = (event) => {
     event.preventDefault();
-    let k = 0;
+
     const newObj = { name: newName, number: newNumber };
     if (persons.some((person) => person.name === newName)) {
       const personUpdate = persons.find((person) => person.name === newName);
@@ -34,18 +37,29 @@ const App = () => {
           `${newName} is already added to phonebook.Do you want to update the old number?`
         )
       ) {
-        requests.update(idPerson, newPersonUpdate).then((response) => {
-          setPersons(persons.map((p) => (p.id === idPerson ? response : p)));
-        });
+        requests
+          .update(idPerson, newPersonUpdate)
+          .then((response) => {
+            setPersons(persons.map((p) => (p.id === idPerson ? response : p)));
+          })
+          .catch((error) => {
+            setErrorMessage(`Information for ${newName} was deleted`);
+            setTimeout(() => {
+              setErrorMessage(null);
+            }, 5000);
+          });
         return;
       }
     }
 
     requests.add(newObj).then((person) => {
+      setMessage(`Added ${person.name} on the catalogue.`);
       setPersons(persons.concat(person));
-      console.log(person);
-      setNewName("");
-      setNewNumber("");
+      setTimeout(() => {
+        setNewName("");
+        setNewNumber("");
+        setMessage(null);
+      }, 3999);
     });
   };
 
@@ -67,6 +81,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Error errorMessage={errorMessage} />
+      <Notification message={message} />
       <span>Filter </span>
       <input value={inputFilter} onChange={handleInputFilter} />
       <PersonForm
@@ -87,5 +103,19 @@ const App = () => {
     </div>
   );
 };
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null;
+  }
 
+  return <div className="message">{message}</div>;
+};
+
+const Error = ({ errorMessage }) => {
+  if (errorMessage === null) {
+    return null;
+  }
+
+  return <div className="error">{errorMessage}</div>;
+};
 export default App;
