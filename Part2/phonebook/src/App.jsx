@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import Persons from "./components/Persons.jsx";
 import PersonForm from "./components/PersonForm.jsx";
-import axios from "axios";
+// import axios from "axios";
+import requests from "./services/requests.js";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -20,23 +21,48 @@ const App = () => {
   };
   const handleSubmit = (event) => {
     event.preventDefault();
+    let k = 0;
     const newObj = { name: newName, number: newNumber };
     if (persons.some((person) => person.name === newName)) {
-      window.alert(`${newName} is already added to phonebook`);
-      return;
+      const personUpdate = persons.find((person) => person.name === newName);
+      const idPerson = personUpdate.id;
+
+      const newPersonUpdate = { ...personUpdate, number: newNumber };
+
+      if (
+        window.confirm(
+          `${newName} is already added to phonebook.Do you want to update the old number?`
+        )
+      ) {
+        requests.update(idPerson, newPersonUpdate).then((response) => {
+          setPersons(persons.map((p) => (p.id === idPerson ? response : p)));
+        });
+        return;
+      }
     }
-    setPersons(persons.concat(newObj));
-    setNewName("");
-    setNewNumber("");
+
+    requests.add(newObj).then((person) => {
+      setPersons(persons.concat(person));
+      console.log(person);
+      setNewName("");
+      setNewNumber("");
+    });
   };
+
   // useEffect(hook, []);
   const hook = () => {
-    const promise = axios.get("http://localhost:3002/persons");
-    promise.then((response) => {
-      setPersons(response.data);
+    requests.getAll().then((people) => {
+      setPersons(people);
     });
   };
   useEffect(hook, []);
+
+  const handleDelete = (id) => {
+    // const toDelete = persons.filter((person) => person.id);
+
+    requests.deletion(id);
+    setPersons(persons.filter((person) => person.id !== id));
+  };
 
   return (
     <div>
@@ -53,7 +79,11 @@ const App = () => {
         handleSubmit={handleSubmit}
       />
       <h2>Numbers</h2>
-      <Persons persons={persons} inputFilter={inputFilter} />
+      <Persons
+        persons={persons}
+        inputFilter={inputFilter}
+        clickDelete={handleDelete}
+      />
     </div>
   );
 };
