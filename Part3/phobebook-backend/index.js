@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
-
-const phonebook = [
+app.use(express.json());
+let phonebook = [
   {
     id: "1",
     name: "Arto Hellas",
@@ -50,5 +50,34 @@ app.get("/api/persons/:id", (request, response) => {
     // response.json(phone);
 
     response.status(404).end();
+  }
+});
+
+app.delete("/api/persons/:id", (request, response) => {
+  const id = request.params.id;
+
+  phonebook = phonebook.filter((phone) => phone.id !== id);
+  response.status(204).end();
+});
+
+app.post("/api/persons", (request, response) => {
+  let newPhone = request.body;
+  const abort =
+    phonebook.some((phone) => {
+      return newPhone.number === phone.number;
+    }) || Boolean(!newPhone.number || !newPhone.name);
+  console.log(abort);
+  if (!abort) {
+    const id = Math.trunc(Math.random() * 100000);
+
+    newPhone = { ...newPhone, id };
+    console.log(newPhone);
+
+    phonebook = phonebook.concat(newPhone);
+    response.json(newPhone);
+  } else {
+    return response
+      .status(400)
+      .json({ error: "duplicate number or number or name missing" });
   }
 });
