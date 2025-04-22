@@ -1,6 +1,8 @@
 const express = require("express");
+const morgan = require("morgan");
 const app = express();
 app.use(express.json());
+app.use(morgan("tiny"));
 let phonebook = [
   {
     id: "1",
@@ -66,12 +68,11 @@ app.post("/api/persons", (request, response) => {
     phonebook.some((phone) => {
       return newPhone.number === phone.number;
     }) || Boolean(!newPhone.number || !newPhone.name);
-  console.log(abort);
+
   if (!abort) {
     const id = Math.trunc(Math.random() * 100000);
 
     newPhone = { ...newPhone, id };
-    console.log(newPhone);
 
     phonebook = phonebook.concat(newPhone);
     response.json(newPhone);
