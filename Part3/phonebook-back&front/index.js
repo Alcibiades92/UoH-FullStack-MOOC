@@ -1,6 +1,9 @@
 const express = require("express");
 const morgan = require("morgan");
+const cors = require("cors");
 const app = express();
+app.use(express.static("dist"));
+app.use(cors());
 app.use(express.json());
 morgan.token("data", function (req, res) {
   return JSON.stringify(req.body);
@@ -43,7 +46,7 @@ app.get("/info", (request, response) => {
   const toBeReturned = { phrase, date };
   response.send(phrase + "\n" + date);
 });
-const PORT = 3002;
+const PORT = process.env.PORT || 3002;
 app.listen(PORT, () => {
   console.log(`This app is running on port :${PORT}`);
 });
