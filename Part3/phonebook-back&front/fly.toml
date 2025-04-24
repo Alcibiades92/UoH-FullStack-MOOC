@@ -1,16 +1,16 @@
-# fly.toml app configuration file generated for phonebook-backend-george on 2025-04-24T12:44:37+03:00
+# fly.toml app configuration file generated for phonebook-back-front on 2025-04-24T15:48:45+03:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'phonebook-backend-george'
+app = 'phonebook-back-front'
 primary_region = 'fra'
 
 [build]
 
 [env]
   PORT = "3002"
-
+  
 [http_service]
   internal_port = 3002
   force_https = true
