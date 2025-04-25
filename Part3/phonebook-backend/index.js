@@ -1,4 +1,6 @@
+require("dotenv").config();
 const express = require("express");
+const Phone = require("./models/phone.js");
 const morgan = require("morgan");
 const cors = require("cors");
 const app = express();
@@ -35,7 +37,9 @@ let phonebook = [
 ];
 
 app.get("/api/persons", (request, response) => {
-  response.json(phonebook);
+  Phone.find({}).then((phones) => {
+    response.json(phones);
+  });
 });
 app.get("/info", (request, response) => {
   const howMany = phonebook.length;
@@ -46,21 +50,16 @@ app.get("/info", (request, response) => {
   const toBeReturned = { phrase, date };
   response.send(phrase + "\n" + date);
 });
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`This app is running on port :${PORT}`);
 });
 
 app.get("/api/persons/:id", (request, response) => {
   const id = request.params.id;
-  const phone = phonebook.find((n) => n.id === id);
-  if (phone) {
+  Phone.findById(id).then((phone) => {
     response.json(phone);
-  } else {
-    // response.json(phone);
-
-    response.status(404).end();
-  }
+  });
 });
 
 app.delete("/api/persons/:id", (request, response) => {
@@ -71,23 +70,17 @@ app.delete("/api/persons/:id", (request, response) => {
 });
 
 app.post("/api/persons", (request, response) => {
-  let newPhone = request.body;
-
-  const abort =
-    phonebook.some((phone) => {
-      return newPhone.number === phone.number;
-    }) || Boolean(!newPhone.number || !newPhone.name);
-
-  if (!abort) {
-    const id = Math.trunc(Math.random() * 100000);
-
-    newPhone = { ...newPhone, id };
-
-    phonebook = phonebook.concat(newPhone);
-    response.json(newPhone);
-  } else {
-    return response
-      .status(400)
-      .json({ error: "duplicate number or number or name missing" });
+  const body = request.body;
+  if (!body.name) {
+    return response.status(400).json({
+      error: "Provide field for the phone",
+    });
   }
+  const phone = new Phone({
+    number: body.number,
+    name: body.name,
+  });
+  phone.save().then((savedPhone) => {
+    response.json(savedPhone);
+  });
 });
