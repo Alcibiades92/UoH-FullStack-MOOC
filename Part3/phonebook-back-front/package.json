@@ -6,7 +6,7 @@
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node --watch index.js",
-    "build:ui": "@powershell Remove-Item -Recurse -Force dist && cd ../phonebook-front  && npm run build && @powershell Copy-Item dist -Recurse ../phonebook-back&front",
+    "build:ui": "@powershell Remove-Item -Recurse -Force dist && cd ../phonebook-front  && npm run build && @powershell Copy-Item dist -Recurse ../phonebook-back-front",
     "deploy": "fly deploy",
     "deploy:full": "npm run build:ui && npm run deploy",
     "logs:prod": "fly logs"
@@ -16,8 +16,9 @@
   "description": "",
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
     "express": "^5.1.0",
-    "mongoose": "^8.13.2",
+    "mongoose": "^8.13.3",
     "morgan": "^1.10.0"
   },
   "devDependencies": {
