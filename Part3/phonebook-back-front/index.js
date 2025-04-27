@@ -54,20 +54,25 @@ app.delete("/api/persons/:id", (request, response, next) => {
     .catch((error) => next(error));
 });
 
-app.post("/api/persons", (request, response) => {
+app.post("/api/persons", (request, response, next) => {
   const body = request.body;
   if (!body.name) {
     return response.status(400).json({
-      error: "Provide field for the phone",
+      error: "Provide a number and a name!",
     });
   }
   const phone = new Phone({
     number: body.number,
     name: body.name,
   });
-  phone.save().then((savedPhone) => {
-    response.json(savedPhone);
-  });
+  phone
+    .save()
+    .then((savedPhone) => {
+      response.json(savedPhone);
+    })
+    .catch((error) => {
+      next(error);
+    });
 });
 app.put("/api/persons/:id", (request, response, next) => {
   const { name, number } = request.body;
@@ -86,11 +91,12 @@ app.put("/api/persons/:id", (request, response, next) => {
     })
     .catch((error) => next(error));
 });
-
 const errorHandler = (error, request, response, next) => {
-  console.log("Error handler says ", error.message);
-  if ((error.name = "CastError")) {
+  if (error.name === "CastError") {
     return response.status(400).send({ error: "Bad request" });
+  } else if (error.name === "ValidationError") {
+    console.log("Validation error");
+    return response.status(400).json({ error: error.message });
   }
   next(error);
 };

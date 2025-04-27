@@ -43,7 +43,8 @@ const App = () => {
             setPersons(persons.map((p) => (p.id === idPerson ? response : p)));
           })
           .catch((error) => {
-            setErrorMessage(`Information for ${newName} was deleted`);
+            // console.log(error.response.data.error);
+            setErrorMessage(`\n${error.response.data.error}`);
             setTimeout(() => {
               setErrorMessage(null);
             }, 5000);
@@ -52,15 +53,25 @@ const App = () => {
       }
     }
 
-    requests.add(newObj).then((person) => {
-      setMessage(`Added ${person.name} on the catalogue.`);
-      setPersons(persons.concat(person));
-      setTimeout(() => {
-        setNewName("");
-        setNewNumber("");
-        setMessage(null);
-      }, 3999);
-    });
+    requests
+      .add(newObj)
+      .then((person) => {
+        setMessage(`Added ${person.name} on the catalogue.`);
+        setPersons(persons.concat(person));
+        setTimeout(() => {
+          setNewName("");
+          setNewNumber("");
+          setMessage(null);
+        }, 3999);
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log(error.response.data);
+        setErrorMessage(`${error.response.data.error}`);
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 7000);
+      });
   };
 
   // useEffect(hook, []);

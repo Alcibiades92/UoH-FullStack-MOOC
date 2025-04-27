@@ -13,8 +13,30 @@ mongoose
   });
 
 const phoneSchema = new mongoose.Schema({
-  name: String,
-  number: String,
+  name: {
+    type: String,
+    required: true,
+    validate: {
+      validator: function (value) {
+        return value.length >= 3;
+      },
+      message: (props) => {
+        return `Expected at least 3 characters got ${props.value.length}`;
+      },
+    },
+  },
+  number: {
+    type: String,
+    required: true,
+    validate: {
+      validator: function (value) {
+        return /^(?=.{8,}$)\d{2,3}-\d+$/.test(value);
+      },
+      message: (props) => {
+        return `Pattern provided is not compatible with the correct one.`;
+      },
+    },
+  },
 });
 
 phoneSchema.set("toJSON", {
