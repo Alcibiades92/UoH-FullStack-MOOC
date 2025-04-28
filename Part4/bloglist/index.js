@@ -1,5 +1,7 @@
-// const app = require("./app.js");
+const app = require("./app");
+const config = require("./config/config.js");
+const logger = require("./utils/logger.js");
 
-// app.listen(config.PORT, () => {
-//   console.log(`App is running on ${config.PORT}`);
-// });
+app.listen(3004, () => {
+  logger.info(`App is running on ${3004}`);
+});

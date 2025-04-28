@@ -1,39 +1,27 @@
 const express = require("express");
+const cors = require("cors");
 const mongoose = require("mongoose");
 const config = require("./config/config");
+const Blog = require("./models/blog.js");
+const logger = require("./utils/logger.js");
+const middleware = require("./utils/middleware.js");
+const blogRouter = require("./controllers/blogs.js");
 
 const app = express();
-
-const blogSchema = mongoose.Schema({
-  title: String,
-  author: String,
-  url: String,
-  likes: Number,
-});
-
-const Blog = mongoose.model("Blog", blogSchema);
-
-const mongoUrl = config.MONGODB_URI;
-
-mongoose.connect(mongoUrl);
-
+app.use(middleware.requestLogger);
+app.use(cors());
 app.use(express.json());
-
-app.get("/api/blogs", (request, response) => {
-  Blog.find({}).then((blogs) => {
-    response.json(blogs);
+mongoose.set("strictQuery", false);
+mongoose
+  .connect(config.MONGODB_URI)
+  .then(() => {
+    logger.info("Connected to DB");
+  })
+  .catch((error) => {
+    logger.error("Error connecting to DB:", error.message); // Logs connection errors
+    process.exit(1); // Exit if connection fails
   });
-});
+app.use("/api/blogs", blogRouter);
+app.use(middleware.errorHandler);
 
-app.post("/api/blogs", (request, response) => {
-  const blog = new Blog(request.body);
-
-  blog.save().then((result) => {
-    response.status(201).json(result);
-  });
-});
-
-const PORT = 3003;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+module.exports = app;
