@@ -8,7 +8,15 @@ const totalLikes = (blogs) => {
   }, 0);
 };
 
+const favoriteBlog = (blogs) => {
+  const likes = blogs.map((blog) => blog.likes);
+  const maximum = Math.max(...likes);
+  const fav = blogs.filter((blog) => blog.likes === maximum);
+  return fav.length === 1 ? fav[0] : fav;
+};
+
 module.exports = {
   dummy,
   totalLikes,
+  favoriteBlog,
 };
