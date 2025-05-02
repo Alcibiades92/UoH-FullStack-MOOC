@@ -13,7 +13,7 @@ describe("total likes", () => {
       __v: 0,
     },
   ];
-  console.log(listHelper);
+  // console.log(listHelper);
   test("when the list has one blog theg , likes equal the likes of that", () => {
     const result = listHelper.totalLikes(listWithOneBlog);
 

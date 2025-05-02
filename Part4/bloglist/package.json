@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "lodash": "^4.17.21",
@@ -11,14 +12,17 @@
   "description": "short list of blogs",
   "main": "index.js",
   "scripts": {
-    "test": "node --test",
-    "start": "node index.js",
-    "dev": "node --watch index.js"
+    "start": "cross-env NODE_ENV=production node index.js",
+    "test": "cross-env NODE_ENV=test node --test",
+    "dev": "cross-env NODE_ENV=development node --watch index.js"
   },
   "keywords": [
     "express",
     "mongoose"
   ],
   "author": "Georgios",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "supertest": "^7.1.0"
+  }
 }

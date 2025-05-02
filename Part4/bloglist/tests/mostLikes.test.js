@@ -102,7 +102,7 @@ describe("most liked author", () => {
 
   test("of an array with multiple objects", () => {
     const result = listHelper.mostLikes(blogs);
-    console.log(result);
+    // console.log(result);
     assert.deepStrictEqual(result, {
       author: "Edsger W. Dijkstra",
       likes: 17,
