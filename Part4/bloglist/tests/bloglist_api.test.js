@@ -1,4 +1,4 @@
-const { test, after, beforeEach } = require("node:test");
+const { test, after, beforeEach, describe } = require("node:test");
 const assert = require("node:assert");
 const supertest = require("supertest");
 const mongoose = require("mongoose");
@@ -56,10 +56,6 @@ test("post requrest creates a new blog", async () => {
   assert.strictEqual(helper.initialBlogs.length + 1, blogsAtEnd.length);
 });
 
-after(async () => {
-  await mongoose.connection.close();
-});
-
 test("missing likes property will set the likes to 0", async () => {
   const newBlog = {
     title: "Song Analysis: Strobe by deadmau5",
@@ -97,4 +93,61 @@ test("missing url property results in bad request", async () => {
     .send(newBlog)
     .expect(400)
     .expect("Content-Type", /application\/json/);
+});
+
+describe("deletion of a blog", () => {
+  beforeEach(async () => {
+    await Blog.deleteMany({});
+    const BlogObjects = helper.initialBlogs.map((blog) => new Blog(blog));
+    const promisedArray = BlogObjects.map((blog) => blog.save());
+    await Promise.all(promisedArray);
+  });
+  test("succeeds with status 204 if id is valid", async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToDelete = blogsAtStart[0];
+    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+    const blogsAtEnd = await helper.blogsInDb();
+    const titles = blogsAtEnd.map((blog) => {
+      blog.title;
+    });
+
+    assert(!titles.includes(blogToDelete.title));
+    assert.strictEqual(blogsAtStart.length - 1, blogsAtEnd.length);
+  });
+  test("response body is equal to {} with valid non-existant id", async () => {
+    const nonExistant = "507f1f77bcf86cd799439011";
+    const response = await api.delete(`/api/blogs/${nonExistant}`).expect(204);
+    assert.deepStrictEqual(response.body, {});
+  });
+});
+
+// -----------------------------------------------
+describe("updating of a single blog", async () => {
+  beforeEach(async () => {
+    await Blog.deleteMany({});
+    const BlogObjects = helper.initialBlogs.map((blog) => new Blog(blog));
+    const promisedArray = BlogObjects.map((blog) => blog.save());
+    await Promise.all(promisedArray);
+  });
+
+  test("with a valid id", async () => {
+    const updatedLikes = { likes: 33 };
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToUpdate = blogsAtStart[0];
+
+    const response = await api
+      .patch(`/api/blogs/${blogToUpdate.id}`)
+      .send(updatedLikes)
+      .expect(200);
+
+    assert.strictEqual(response.body.likes, updatedLikes.likes);
+    const response2 = await helper.blogsInDb();
+
+    const likess = response2.map((blog) => blog.likes);
+
+    assert(likess.includes(33));
+  });
+});
+after(async () => {
+  await mongoose.connection.close();
 });
