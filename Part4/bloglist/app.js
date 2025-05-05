@@ -7,6 +7,7 @@ const logger = require("./utils/logger.js");
 const middleware = require("./utils/middleware.js");
 const blogRouter = require("./controllers/blogs.js");
 const usersRouter = require("./controllers/users.js");
+const loginRouter = require("./controllers/login.js");
 
 const app = express();
 app.use(middleware.requestLogger);
@@ -22,6 +23,7 @@ mongoose
     logger.error("Error connecting to DB:", error.message); // Logs connection errors
     process.exit(1); // Exit if connection fails
   });
+app.use("/api/login", loginRouter);
 app.use("/api/blogs", blogRouter);
 app.use("/api/users", usersRouter);
 app.use(middleware.errorHandler);
