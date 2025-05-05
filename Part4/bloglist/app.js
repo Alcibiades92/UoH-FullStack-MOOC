@@ -10,9 +10,10 @@ const usersRouter = require("./controllers/users.js");
 const loginRouter = require("./controllers/login.js");
 
 const app = express();
-app.use(middleware.requestLogger);
-app.use(cors());
 app.use(express.json());
+app.use(cors());
+app.use(middleware.requestLogger);
+app.use(middleware.tokenExtractor);
 mongoose.set("strictQuery", false);
 mongoose
   .connect(config.MONGODB_URI)
