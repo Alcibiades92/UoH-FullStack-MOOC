@@ -6,6 +6,7 @@ const Blog = require("./models/blog.js");
 const logger = require("./utils/logger.js");
 const middleware = require("./utils/middleware.js");
 const blogRouter = require("./controllers/blogs.js");
+const usersRouter = require("./controllers/users.js");
 
 const app = express();
 app.use(middleware.requestLogger);
@@ -22,6 +23,7 @@ mongoose
     process.exit(1); // Exit if connection fails
   });
 app.use("/api/blogs", blogRouter);
+app.use("/api/users", usersRouter);
 app.use(middleware.errorHandler);
 
 module.exports = app;
