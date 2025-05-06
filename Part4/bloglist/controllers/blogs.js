@@ -3,6 +3,7 @@ const Blog = require("../models/blog.js");
 const User = require("../models/user.js");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
+const middleware = require("../utils/middleware.js");
 // Retrive token from the authorization headder or return null
 
 blogRouter.get("/", async (request, response, next) => {
@@ -21,62 +22,70 @@ blogRouter.get("/", async (request, response, next) => {
   // });
 });
 
-blogRouter.post("/", async (request, response, next) => {
-  // Get all the users from db and assign the note to a random one
-  const body = request.body;
+blogRouter.post(
+  "/",
+  middleware.userExtractor,
+  async (request, response, next) => {
+    // Get all the users from db and assign the note to a random one
+    const body = request.body;
 
-  const decodedToken = jwt.verify(request.token, process.env.SECRET);
-  if (!decodedToken.id) {
-    return response.status(401).json({ error: "token invalid" });
-  }
-  const user = await User.findById(decodedToken.id);
-
-  const blog = new Blog({
-    title: body.title,
-    author: body.author,
-    url: body.url,
-    likes: body.likes,
-    user: user._id,
-  });
-
-  try {
-    const savedBlog = await blog.save();
-    user.blogs = user.blogs.concat(savedBlog._id);
-    await user.save();
-    response.status(201).json(savedBlog);
-  } catch (exception) {
-    next(exception);
-  }
-});
-
-blogRouter.delete("/:id", async (request, response, next) => {
-  const blogId = request.params.id;
-  // if it misses respond
-  if (!request.token) {
-    return response.status(401).json({
-      error: "Token missing",
-    });
-  }
-  //compare the ids
-  try {
-    const decodedToken = jwt.verify(request.token, process.env.SECRET);
-    const blog = await Blog.findById(blogId);
-    console.log(blog.user);
-    console.log(blog.user.toString() === decodedToken.id.toString());
-    if (blog.user.toString() === decodedToken.id.toString()) {
-      await Blog.findByIdAndDelete(blogId);
-      await User.findByIdAndUpdate(decodedToken.id, {
-        $pull: { blogs: new mongoose.Types.ObjectId(blog._id) },
-      });
-      return response.status(204).end();
+    const user = request.user;
+    if (!user) {
+      return response.status(401).json({ error: "token invalid" });
     }
-  } catch (exception) {
-    if (exception.name === "JsonWebTokenError")
-      return response.status(401).json({ message: "Not Authorized" });
+    const userObject = await User.findById(user.toString());
 
-    next(exception);
+    const blog = new Blog({
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      likes: body.likes,
+      user: user.toString(),
+    });
+
+    try {
+      const savedBlog = await blog.save();
+      userObject.blogs = userObject.blogs.concat(savedBlog._id);
+      await userObject.save();
+      response.status(201).json(savedBlog);
+    } catch (exception) {
+      next(exception);
+    }
   }
-});
+);
+
+blogRouter.delete(
+  "/:id",
+  middleware.userExtractor,
+  async (request, response, next) => {
+    const blogId = request.params.id;
+    // if it misses respond
+    if (!request.token) {
+      return response.status(401).json({
+        error: "Token missing",
+      });
+    }
+    //compare the ids
+    try {
+      const blog = await Blog.findById(blogId);
+      const user = request.user;
+
+      console.log(blog.user.toString() === user.toString());
+      if (blog.user.toString() === user.toString()) {
+        await Blog.findByIdAndDelete(blogId);
+        await User.findByIdAndUpdate(user, {
+          $pull: { blogs: new mongoose.Types.ObjectId(blog._id) },
+        });
+        return response.status(204).end();
+      }
+    } catch (exception) {
+      if (exception.name === "JsonWebTokenError")
+        return response.status(401).json({ message: "Not Authorized" });
+
+      next(exception);
+    }
+  }
+);
 
 blogRouter.patch(`/:id`, async (request, response, next) => {
   const id = request.params.id;

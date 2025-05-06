@@ -5,9 +5,20 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hc
 
 
 ###
-DELETE http://localhost:3003/api/blogs/686819d561e18001128bdf4d73
-
+DELETE http://localhost:3003/api/blogs/6819ed8280a86a7a5373cd21
 Content-Type : application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hcmlhIiwiaWQiOiI2ODE5ZDUzYWUxODAwMTEyOGJkZjRkNmIiLCJpYXQiOjE3NDY1MjM0NTl9.EKyQ_9H6I69H8EWj7opccMJB3jsZAYDCC5Spd65D1OE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hcmlhIiwiaWQiOiI2ODE5ZWIyMWIyMjNlNWRjZTE4MjQ0YjEiLCJpYXQiOjE3NDY1MjkwNjR9.YCHF-0egEuH5G0fxk9qiTzWPEYI6pXfiiCJo_d8Mdzk
 
 
+
+###
+DELETE http://localhost:3003/api/blogs/6819f0ab1cbef264916c7501
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkdvZXJnaWVCb3kiLCJpZCI6IjY4MTlmMDY5MWNiZWYyNjQ5MTZjNzRmZCIsImlhdCI6MTc0NjUzMDQxOH0.RRLQrUdNTokszXpaHrlA0xNEpTI92VPqEaXZrPibVWc
+
+{
+  "title": "The adventures of Geroge",
+  "author": "George",
+  "url": "https://crodurfrrr.com",
+  "likes": 1444
+}
