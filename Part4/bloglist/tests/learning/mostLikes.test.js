@@ -1,8 +1,44 @@
 const { test, describe } = require("node:test");
-const assert = require("node:assert");
-const listHelper = require("../utils/list_helper.js");
 
-describe("author with most blogs", () => {
+const assert = require("node:assert");
+
+const listHelper = require("../../utils/list_helper");
+
+describe("most liked author", () => {
+  const blogsTied = [
+    {
+      _id: "5a422a851b54a676234d17f7",
+      title: "React patterns",
+      author: "Michael Chan",
+      url: "https://reactpatterns.com/",
+      likes: 7,
+      __v: 0,
+    },
+    {
+      _id: "5a422a851b54a676234d17f7",
+      title: "React patterns",
+      author: "Michael Chan",
+      url: "https://reactpatterns.com/",
+      likes: 7,
+      __v: 0,
+    },
+    {
+      _id: "5a422a851b54a676234d17f7",
+      title: "React patterns",
+      author: "Michael Chan",
+      url: "https://reactpatterns.com/",
+      likes: 7,
+      __v: 0,
+    },
+    {
+      author: "John Lee",
+      likes: 20,
+    },
+    {
+      author: "John Lee",
+      likes: 1,
+    },
+  ];
   const blog = [
     {
       _id: "5a422a851b54a676234d17f7",
@@ -64,15 +100,29 @@ describe("author with most blogs", () => {
     },
   ];
 
-  test("array that contains mutliple values", () => {
-    const result = listHelper.mostBlogs(blogs);
-    // console.log(result, typeof result);
-
-    assert.deepStrictEqual(result, { author: "Robert C. Martin", blogs: 3 });
+  test("of an array with multiple objects", () => {
+    const result = listHelper.mostLikes(blogs);
+    // console.log(result);
+    assert.deepStrictEqual(result, {
+      author: "Edsger W. Dijkstra",
+      likes: 17,
+    });
   });
 
-  test("array with one author ", () => {
-    const result = listHelper.mostBlogs(blog);
-    assert.deepStrictEqual(result, { author: "Michael Chan", blogs: 1 });
+  test("of an array with one object", () => {
+    const result = listHelper.mostLikes(blog);
+    assert.deepStrictEqual(result, {
+      author: "Michael Chan",
+      likes: 7,
+    });
+  });
+
+  test("of an array that likes are equal for two authors", () => {
+    const result = listHelper.mostLikes(blogsTied);
+
+    assert.deepStrictEqual(result, {
+      author: "Michael Chan",
+      likes: 21,
+    });
   });
 });

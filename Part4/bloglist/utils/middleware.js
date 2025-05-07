@@ -23,13 +23,13 @@ const tokenExtractor = (request, response, next) => {
 };
 
 const userExtractor = (request, response, next) => {
-  console.log(request.token, "user Extractor");
+  // console.log(request.token, "user Extractor");
   try {
     request.user =
       request.token === null
         ? null
         : jwt.verify(request.token, process.env.SECRET).id;
-    console.log(request.user, "request user");
+    // console.log(request.user, "request user");
     next();
   } catch (exception) {
     next(exception);

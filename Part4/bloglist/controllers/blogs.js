@@ -68,6 +68,9 @@ blogRouter.delete(
     //compare the ids
     try {
       const blog = await Blog.findById(blogId);
+      if (!blog) {
+        return response.status(204).end();
+      }
       const user = request.user;
 
       console.log(blog.user.toString() === user.toString());
@@ -79,6 +82,7 @@ blogRouter.delete(
         return response.status(204).end();
       }
     } catch (exception) {
+      console.log(exception.name);
       if (exception.name === "JsonWebTokenError")
         return response.status(401).json({ message: "Not Authorized" });
 
@@ -87,19 +91,38 @@ blogRouter.delete(
   }
 );
 
-blogRouter.patch(`/:id`, async (request, response, next) => {
-  const id = request.params.id;
+blogRouter.patch(
+  `/:id`,
+  middleware.userExtractor,
+  async (request, response, next) => {
+    // if it misses respond
+    if (!request.token) {
+      return response.status(401).json({
+        error: "Token missing",
+      });
+    }
+    const id = null || request.params.id;
+    const blog = await Blog.findById(id);
+    if (!blog) {
+      return response.status(404).end();
+    }
+    const user = request.user;
 
-  const updates = request.body.likes;
-  try {
-    const updatedBlog = await Blog.findByIdAndUpdate(
-      id,
-      { likes: updates },
-      { new: true, runValidators: true, upsert: false }
-    );
-    response.status(200).json(updatedBlog);
-  } catch (exception) {
-    next(exception);
+    const updates = request.body.likes;
+    if (!(user.toString() === blog.user.toString())) {
+      console.log("Unauthorized");
+      return response.status(401).send({ error: "Not Authorized" });
+    }
+    try {
+      const updatedBlog = await Blog.findByIdAndUpdate(
+        id,
+        { likes: updates },
+        { new: true, runValidators: true, upsert: false }
+      );
+      response.status(200).json(updatedBlog);
+    } catch (exception) {
+      next(exception);
+    }
   }
-});
+);
 module.exports = blogRouter;
