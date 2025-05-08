@@ -13,7 +13,7 @@ const App = () => {
     event.preventDefault();
     try {
       const userr = await loginService.login({ username, password });
-
+      window.localStorage.setItem("loggedInUser", JSON.stringify(userr));
       setUser(userr);
       setUsername("");
       setPassword("");
@@ -28,11 +28,21 @@ const App = () => {
       console.log(exception);
     }
   };
-
+  const handleLogOut = (event) => {
+    event.preventDefault();
+    window.localStorage.removeItem("loggedInUser");
+    setUser(null);
+  };
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
   }, []);
-
+  useEffect(() => {
+    const loggedInJSON = window.localStorage.getItem("loggedInUser");
+    if (loggedInJSON) {
+      const user = JSON.parse(loggedInJSON);
+      setUser(user);
+    }
+  }, []);
   const loginForm = () => {
     return (
       <form onSubmit={handleSubmit}>
@@ -79,6 +89,9 @@ const App = () => {
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}
+      <button type="button" onClick={handleLogOut}>
+        Log out
+      </button>
     </div>
   );
 };
