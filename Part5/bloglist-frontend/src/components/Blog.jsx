@@ -1,9 +1,25 @@
 import { useState } from "react";
-const Blog = ({ blog }) => {
+import BlogService from "../services/blogs";
+const Blog = ({ blog, setBlogs }) => {
   const [showAll, setShowAll] = useState(false);
-  console.log(blog);
+
   const toggleShowAll = () => {
     setShowAll((showAll) => !showAll);
+  };
+  const handleLike = async () => {
+    console.log(blog);
+    const blogToSend = {
+      title: blog.title,
+      author: blog.author,
+      url: blog.url,
+      id: blog.id,
+      user: blog.user,
+      likes: blog.likes + 1,
+    };
+    console.log(blog.user);
+    const response = await BlogService.update(blog.id, blogToSend);
+    const blogs = await BlogService.getAll();
+    setBlogs(blogs);
   };
   const blogStyle = {
     paddingTop: 10,
@@ -20,7 +36,9 @@ const Blog = ({ blog }) => {
         <div>
           <p>Author: {blog.author}</p>
           <p>Url :{blog.url}</p>
-          <p>Likes : {blog.likes}</p>
+          <p>
+            Likes : {blog.likes} <button onClick={handleLike}>👍</button>
+          </p>
         </div>
       )}
       <button onClick={toggleShowAll}>{showAll ? "hide" : "view"}</button>
