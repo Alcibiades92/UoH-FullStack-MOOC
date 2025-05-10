@@ -4,6 +4,7 @@ import blogService from "./services/blogs";
 import loginService from "./services/login";
 import CreateNewBlog from "./components/CreateNewBlog";
 import Message from "./components/Message";
+import Toggle from "./components/Toggle";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -115,12 +116,14 @@ const App = () => {
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}
-      <CreateNewBlog
-        user={user}
-        setBlogs={setBlogs}
-        setSuccess={setSuccess}
-        setMessage={setMessage}
-      />
+      <Toggle buttonLabel="New blog">
+        <CreateNewBlog
+          user={user}
+          setBlogs={setBlogs}
+          setSuccess={setSuccess}
+          setMessage={setMessage}
+        />
+      </Toggle>
     </div>
   );
 };
