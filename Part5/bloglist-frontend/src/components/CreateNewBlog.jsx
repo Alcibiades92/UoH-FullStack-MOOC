@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 import blogService from "../services/blogs";
 
-function CreateNewBlog({ user, setBlogs }) {
+function CreateNewBlog({ user, setBlogs, setMessage, setSuccess }) {
   const [author, setAuthor] = useState("");
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
@@ -17,11 +17,19 @@ function CreateNewBlog({ user, setBlogs }) {
       };
       await blogService.create(newObject);
       const blogs = await blogService.getAll();
+      setSuccess(true);
+      setMessage(`New blog ${newObject.title} by ${newObject.author}`);
       setBlogs(blogs);
+      setTimeout(() => {
+        setMessage("");
+      }, 3000);
     } catch (exception) {
-      console.log("error creating user");
-      console.log(exception);
-      console.log(exception.name);
+      console.log(exception.response.data.error);
+      setSuccess(false);
+      setMessage(exception.response.data.error);
+      setTimeout(() => {
+        setMessage("");
+      }, 3000);
     }
   };
   return (

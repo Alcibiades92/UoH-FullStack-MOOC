@@ -3,13 +3,15 @@ import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 import CreateNewBlog from "./components/CreateNewBlog";
+import Message from "./components/Message";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [message, setMessage] = useState("");
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -20,22 +22,34 @@ const App = () => {
       setUsername("");
       setPassword("");
       blogService.setToken(userr.token);
-
-      // console.log(
-      //   `You are logged in user ${user.username} with real name ${user.name}`
-      // );
+      setSuccess(true);
+      setMessage(`Succesfully logged in . Welcome ${userr.username}`);
+      setTimeout(() => {
+        setMessage("");
+      }, 3000);
     } catch (exception) {
       // setTimeout(() => {
       //   console.log(exception.name);
       // }, 1000);
-      console.log(exception);
+      setSuccess(false);
+      setMessage(exception.response.data.error);
+      setTimeout(() => {
+        setMessage("");
+      }, 5000);
     }
   };
   const handleLogOut = (event) => {
-    event.preventDefault();
-    window.localStorage.removeItem("loggedInUser");
-    setUser(null);
-    blogService.setToken(null);
+    try {
+      event.preventDefault();
+      window.localStorage.removeItem("loggedInUser");
+      setUser(null);
+      blogService.setToken(null);
+      setSuccess(true);
+      setMessage("Logged out complete");
+    } catch (exception) {
+      setSuccess(false);
+      setMessage("Error logging out");
+    }
   };
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -84,12 +98,14 @@ const App = () => {
       <div>
         <h2>Log in to the application</h2>
         {loginForm()}
+        {message && <Message message={message} success={success} />}
       </div>
     );
   }
   return (
     <div>
       <h2>Blogs</h2>
+      {message && <Message message={message} success={success} />}
       <p>
         <strong>{user.username}</strong> is currently logged in
       </p>
@@ -99,7 +115,12 @@ const App = () => {
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}
-      <CreateNewBlog user={user} setBlogs={setBlogs} />
+      <CreateNewBlog
+        user={user}
+        setBlogs={setBlogs}
+        setSuccess={setSuccess}
+        setMessage={setMessage}
+      />
     </div>
   );
 };
