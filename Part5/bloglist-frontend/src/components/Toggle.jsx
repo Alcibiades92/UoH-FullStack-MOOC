@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useState } from 'react'
 
 const Toggle = (props) => {
-  const [visible, setVisible] = useState(false);
-  const hide = { display: visible ? "none" : "" };
-  const show = { display: visible ? "" : "none" };
+  const [visible, setVisible] = useState(false)
+  const hide = { display: visible ? 'none' : '' }
+  const show = { display: visible ? '' : 'none' }
 
   const toggleVisibility = () => {
-    setVisible((v) => !v);
-  };
+    setVisible((v) => !v)
+  }
 
   return (
     <div>
@@ -19,7 +19,7 @@ const Toggle = (props) => {
         <button onClick={toggleVisibility}>Cancel</button>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Toggle;
+export default Toggle

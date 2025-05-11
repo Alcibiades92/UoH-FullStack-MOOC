@@ -1,37 +1,37 @@
-import React from "react";
-import { useState } from "react";
-import blogService from "../services/blogs";
+import React from 'react'
+import { useState } from 'react'
+import blogService from '../services/blogs'
 
 function CreateNewBlog({ user, setBlogs, setMessage, setSuccess }) {
-  const [author, setAuthor] = useState("");
-  const [title, setTitle] = useState("");
-  const [url, setUrl] = useState("");
+  const [author, setAuthor] = useState('')
+  const [title, setTitle] = useState('')
+  const [url, setUrl] = useState('')
   const handleSubmit = async (event, user) => {
-    event.preventDefault();
+    event.preventDefault()
     try {
       const newObject = {
         author,
         title,
         url,
         likes: 35,
-      };
-      await blogService.create(newObject);
-      const blogs = await blogService.getAll();
-      setSuccess(true);
-      setMessage(`New blog ${newObject.title} by ${newObject.author}`);
-      setBlogs(blogs);
+      }
+      await blogService.create(newObject)
+      const blogs = await blogService.getAll()
+      setSuccess(true)
+      setMessage(`New blog ${newObject.title} by ${newObject.author}`)
+      setBlogs(blogs)
       setTimeout(() => {
-        setMessage("");
-      }, 3000);
+        setMessage('')
+      }, 3000)
     } catch (exception) {
-      console.log(exception.response.data.error);
-      setSuccess(false);
-      setMessage(exception.response.data.error);
+      console.log(exception.response.data.error)
+      setSuccess(false)
+      setMessage(exception.response.data.error)
       setTimeout(() => {
-        setMessage("");
-      }, 3000);
+        setMessage('')
+      }, 3000)
     }
-  };
+  }
   return (
     <div>
       <form onSubmit={(event) => handleSubmit(event, user)}>
@@ -65,7 +65,7 @@ function CreateNewBlog({ user, setBlogs, setMessage, setSuccess }) {
         <button type="submit">Create new Blog</button>
       </form>
     </div>
-  );
+  )
 }
 
-export default CreateNewBlog;
+export default CreateNewBlog

@@ -1,68 +1,68 @@
-import { useState, useEffect } from "react";
-import Blog from "./components/Blog";
-import blogService from "./services/blogs";
-import loginService from "./services/login";
-import CreateNewBlog from "./components/CreateNewBlog";
-import Message from "./components/Message";
-import Toggle from "./components/Toggle";
+import { useState, useEffect } from 'react'
+import Blog from './components/Blog'
+import blogService from './services/blogs'
+import loginService from './services/login'
+import CreateNewBlog from './components/CreateNewBlog'
+import Message from './components/Message'
+import Toggle from './components/Toggle'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
-  const [message, setMessage] = useState("");
-  const [success, setSuccess] = useState(false);
+  const [blogs, setBlogs] = useState([])
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [user, setUser] = useState(null)
+  const [message, setMessage] = useState('')
+  const [success, setSuccess] = useState(false)
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
+    event.preventDefault()
     try {
-      const userr = await loginService.login({ username, password });
-      window.localStorage.setItem("loggedInUser", JSON.stringify(userr));
-      setUser(userr);
-      setUsername("");
-      setPassword("");
-      blogService.setToken(userr.token);
-      setSuccess(true);
-      setMessage(`Succesfully logged in . Welcome ${userr.username}`);
+      const userr = await loginService.login({ username, password })
+      window.localStorage.setItem('loggedInUser', JSON.stringify(userr))
+      setUser(userr)
+      setUsername('')
+      setPassword('')
+      blogService.setToken(userr.token)
+      setSuccess(true)
+      setMessage(`Succesfully logged in . Welcome ${userr.username}`)
       setTimeout(() => {
-        setMessage("");
-      }, 3000);
+        setMessage('')
+      }, 3000)
     } catch (exception) {
       // setTimeout(() => {
       //   console.log(exception.name);
       // }, 1000);
-      setSuccess(false);
-      setMessage(exception.response.data.error);
+      setSuccess(false)
+      setMessage(exception.response.data.error)
       setTimeout(() => {
-        setMessage("");
-      }, 5000);
+        setMessage('')
+      }, 5000)
     }
-  };
+  }
   const handleLogOut = (event) => {
     try {
-      event.preventDefault();
-      window.localStorage.removeItem("loggedInUser");
-      setUser(null);
-      blogService.setToken(null);
-      setSuccess(true);
-      setMessage("Logged out complete");
+      event.preventDefault()
+      window.localStorage.removeItem('loggedInUser')
+      setUser(null)
+      blogService.setToken(null)
+      setSuccess(true)
+      setMessage('Logged out complete')
     } catch (exception) {
-      setSuccess(false);
-      setMessage("Error logging out");
+      setSuccess(false)
+      setMessage('Error logging out')
     }
-  };
+  }
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
-  }, []);
+    blogService.getAll().then((blogs) => setBlogs(blogs))
+  }, [])
   useEffect(() => {
-    const loggedInJSON = window.localStorage.getItem("loggedInUser");
+    const loggedInJSON = window.localStorage.getItem('loggedInUser')
     if (loggedInJSON) {
-      const user = JSON.parse(loggedInJSON);
-      setUser(user);
-      blogService.setToken(user.token);
+      const user = JSON.parse(loggedInJSON)
+      setUser(user)
+      blogService.setToken(user.token)
     }
-  }, []);
+  }, [])
   const loginForm = () => {
     return (
       <form onSubmit={handleSubmit}>
@@ -73,7 +73,7 @@ const App = () => {
             type="text"
             value={username}
             onChange={({ target }) => {
-              setUsername(target.value);
+              setUsername(target.value)
             }}
           />
         </div>
@@ -85,14 +85,14 @@ const App = () => {
             type="password"
             value={password}
             onChange={({ target }) => {
-              setPassword(target.value);
+              setPassword(target.value)
             }}
           />
         </div>
         <button type="submit">Log in</button>
       </form>
-    );
-  };
+    )
+  }
 
   if (user === null) {
     return (
@@ -101,7 +101,7 @@ const App = () => {
         {loginForm()}
         {message && <Message message={message} success={success} />}
       </div>
-    );
+    )
   }
   return (
     <div>
@@ -125,7 +125,7 @@ const App = () => {
         />
       </Toggle>
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App
