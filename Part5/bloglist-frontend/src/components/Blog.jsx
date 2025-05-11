@@ -16,10 +16,20 @@ const Blog = ({ blog, setBlogs }) => {
       user: blog.user,
       likes: blog.likes + 1,
     };
-    console.log(blog.user);
+
     const response = await BlogService.update(blog.id, blogToSend);
     const blogs = await BlogService.getAll();
     setBlogs(blogs);
+  };
+  const handleDelete = async () => {
+    const decision = window.confirm(
+      `Remove blog ${blog.title} by ${blog.author}`
+    );
+    if (decision) {
+      await BlogService.deleteOne(blog.id);
+      const blogs = await BlogService.getAll();
+      setBlogs(blogs);
+    }
   };
   const blogStyle = {
     paddingTop: 10,
@@ -42,6 +52,12 @@ const Blog = ({ blog, setBlogs }) => {
         </div>
       )}
       <button onClick={toggleShowAll}>{showAll ? "hide" : "view"}</button>
+      <button
+        onClick={handleDelete}
+        style={{ border: "2px solid red", fontWeight: "600" }}
+      >
+        Delete Blog
+      </button>
     </div>
   );
 };
