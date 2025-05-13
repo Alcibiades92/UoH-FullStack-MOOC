@@ -40,15 +40,15 @@ const Blog = ({ blog, setBlogs }) => {
     marginBottom: 5,
   }
   return (
-    <div style={blogStyle}>
-      <p>Title : {blog.title}</p>
+    <div style={blogStyle} data-testid="note">
+      <p>{blog.title}</p>
+      <p>{blog.author}</p>
 
       {showAll && (
         <div>
-          <p>Author: {blog.author}</p>
-          <p>Url :{blog.url}</p>
+          <p>{blog.url}</p>
           <p>
-            Likes : {blog.likes} <button onClick={handleLike}>👍</button>
+            {blog.likes} <button onClick={handleLike}>👍</button>
           </p>
         </div>
       )}
