@@ -52,7 +52,9 @@ const Blog = ({ blog, setBlogs }) => {
           </p>
         </div>
       )}
-      <button onClick={toggleShowAll}>{showAll ? 'hide' : 'view'}</button>
+      <button onClick={toggleShowAll} data-testid="show">
+        {showAll ? 'hide' : 'view'}
+      </button>
       <button
         onClick={handleDelete}
         style={{ border: '2px solid red', fontWeight: '600' }}
