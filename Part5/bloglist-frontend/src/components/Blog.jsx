@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import BlogService from '../services/blogs'
 import PropTypes from 'prop-types'
+
 const Blog = ({ blog, setBlogs }) => {
   const [showAll, setShowAll] = useState(false)
 
@@ -44,14 +45,7 @@ const Blog = ({ blog, setBlogs }) => {
       <p>{blog.title}</p>
       <p>{blog.author}</p>
 
-      {showAll && (
-        <div>
-          <p>{blog.url}</p>
-          <p>
-            {blog.likes} <button onClick={handleLike}>👍</button>
-          </p>
-        </div>
-      )}
+      {showAll && <Button blog={blog} handleLike={handleLike} />}
       <button onClick={toggleShowAll} data-testid="show">
         {showAll ? 'hide' : 'view'}
       </button>
@@ -61,6 +55,17 @@ const Blog = ({ blog, setBlogs }) => {
       >
         Delete Blog
       </button>
+    </div>
+  )
+}
+
+export const Button = ({ blog, handleLike }) => {
+  return (
+    <div>
+      <p>{blog.url}</p>
+      <p>
+        {blog.likes} <button onClick={handleLike}>👍</button>
+      </p>
     </div>
   )
 }

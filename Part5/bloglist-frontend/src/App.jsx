@@ -52,6 +52,7 @@ const App = () => {
       setMessage('Error logging out')
     }
   }
+
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs))
   }, [])
