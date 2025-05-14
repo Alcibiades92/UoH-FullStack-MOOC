@@ -2,39 +2,17 @@ import React from 'react'
 import { useState } from 'react'
 import blogService from '../services/blogs'
 
-function CreateNewBlog({ user, setBlogs, setMessage, setSuccess }) {
+function CreateNewBlog({ addBlog }) {
   const [author, setAuthor] = useState('')
   const [title, setTitle] = useState('')
   const [url, setUrl] = useState('')
-  const handleSubmit = async (event, user) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
-    try {
-      const newObject = {
-        author,
-        title,
-        url,
-        likes: 35,
-      }
-      await blogService.create(newObject)
-      const blogs = await blogService.getAll()
-      setSuccess(true)
-      setMessage(`New blog ${newObject.title} by ${newObject.author}`)
-      setBlogs(blogs)
-      setTimeout(() => {
-        setMessage('')
-      }, 3000)
-    } catch (exception) {
-      console.log(exception.response.data.error)
-      setSuccess(false)
-      setMessage(exception.response.data.error)
-      setTimeout(() => {
-        setMessage('')
-      }, 3000)
-    }
+    addBlog({ author, title, url })
   }
   return (
     <div>
-      <form onSubmit={(event) => handleSubmit(event, user)}>
+      <form onSubmit={(event) => handleSubmit(event)}>
         <div>
           <label>Title</label>
           <input
@@ -42,6 +20,7 @@ function CreateNewBlog({ user, setBlogs, setMessage, setSuccess }) {
             name="Title"
             value={title}
             onChange={(event) => setTitle(event.target.value)}
+            placeholder="title"
           />
         </div>
         <div>
@@ -51,6 +30,7 @@ function CreateNewBlog({ user, setBlogs, setMessage, setSuccess }) {
             name="Author"
             value={author}
             onChange={(event) => setAuthor(event.target.value)}
+            placeholder="author"
           />
         </div>
         <div>
@@ -60,6 +40,7 @@ function CreateNewBlog({ user, setBlogs, setMessage, setSuccess }) {
             name="Url"
             value={url}
             onChange={(event) => setUrl(event.target.value)}
+            placeholder="url"
           />
         </div>
         <button type="submit">Create new Blog</button>

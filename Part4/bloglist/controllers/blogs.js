@@ -55,7 +55,7 @@ blogRouter.post(
 );
 
 blogRouter.delete(
-  "/:id",
+  `/:id`,
   middleware.userExtractor,
   async (request, response, next) => {
     const blogId = request.params.id;
@@ -125,4 +125,43 @@ blogRouter.patch(
     }
   }
 );
+
+blogRouter.put(
+  `/:id`,
+  middleware.userExtractor,
+  async (request, response, next) => {
+    const body = request.body;
+    if (!request.token) {
+      return response.status(401).json({
+        error: "Token missing",
+      });
+    }
+    const id = null || request.params.id;
+    const blog = await Blog.findById(id);
+    if (!blog) {
+      return response.status(404).end();
+    }
+    const user = request.user;
+    console.log(user, "user");
+    if (!(user.toString() === blog.user.toString())) {
+      console.log("Unauthorized");
+      return response.status(401).send({ error: "Not Authorized" });
+    }
+    try {
+      const BlogToBeUpdated = await Blog.findById(id);
+      console.log(BlogToBeUpdated.user);
+      BlogToBeUpdated.title = body.title;
+      BlogToBeUpdated.author = body.author;
+      BlogToBeUpdated.url = body.url;
+      BlogToBeUpdated.likes = body.likes;
+      // BlogToBeUpdated.user = body.user;
+
+      await BlogToBeUpdated.save();
+      response.json(BlogToBeUpdated);
+    } catch (exception) {
+      next(exception);
+    }
+  }
+);
+
 module.exports = blogRouter;

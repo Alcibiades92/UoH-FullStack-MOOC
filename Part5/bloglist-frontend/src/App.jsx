@@ -64,6 +64,33 @@ const App = () => {
       blogService.setToken(user.token)
     }
   }, [])
+  // might delete later
+  const createBlog = async (obj) => {
+    try {
+      const newObject = {
+        author: obj.author,
+        title: obj.title,
+        url: obj.url,
+        likes: 35,
+      }
+      await blogService.create(newObject)
+      const blogs = await blogService.getAll()
+      setSuccess(true)
+      setMessage(`New blog ${newObject.title} by ${newObject.author}`)
+      setBlogs(blogs)
+      setTimeout(() => {
+        setMessage('')
+      }, 3000)
+    } catch (exception) {
+      console.log(exception)
+      // console.log(exception.response.data.error)
+      setSuccess(false)
+      setMessage(exception.response.data.error)
+      setTimeout(() => {
+        setMessage('')
+      }, 3000)
+    }
+  }
   const loginForm = () => {
     return (
       <form onSubmit={handleSubmit}>
@@ -118,12 +145,7 @@ const App = () => {
         <Blog key={blog.id} blog={blog} setBlogs={setBlogs} />
       ))}
       <Toggle buttonLabel="New blog">
-        <CreateNewBlog
-          user={user}
-          setBlogs={setBlogs}
-          setSuccess={setSuccess}
-          setMessage={setMessage}
-        />
+        <CreateNewBlog addBlog={createBlog} />
       </Toggle>
     </div>
   )
