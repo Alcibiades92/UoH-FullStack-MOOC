@@ -21,6 +21,7 @@ function CreateNewBlog({ addBlog }) {
             value={title}
             onChange={(event) => setTitle(event.target.value)}
             placeholder="title"
+            data-testid="title"
           />
         </div>
         <div>
@@ -31,6 +32,7 @@ function CreateNewBlog({ addBlog }) {
             value={author}
             onChange={(event) => setAuthor(event.target.value)}
             placeholder="author"
+            data-testid="author"
           />
         </div>
         <div>
@@ -41,6 +43,7 @@ function CreateNewBlog({ addBlog }) {
             value={url}
             onChange={(event) => setUrl(event.target.value)}
             placeholder="url"
+            data-testid="url"
           />
         </div>
         <button type="submit">Create new Blog</button>
