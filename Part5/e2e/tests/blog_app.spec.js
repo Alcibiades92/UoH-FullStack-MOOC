@@ -1,5 +1,5 @@
 const { test, beforeEach, expect, describe } = require("@playwright/test");
-const { loginWith } = require("./helper");
+const { loginWith, createBlog } = require("./helper");
 
 describe("Blog app", async () => {
   beforeEach(async ({ page, request }) => {
@@ -45,14 +45,31 @@ describe("Blog app", async () => {
       });
 
       test("a new blog can be created", async ({ page, request }) => {
-        await page.getByRole("button", { name: "New blog" }).click();
-        await page.getByTestId("title").fill("The man on the silver");
-        await page.getByTestId("author").fill("Rainbow");
-        await page.getByTestId("url").fill("http://localhost:10000");
-        await page.getByRole("button", { name: "Create new blog" }).click();
+        await createBlog(
+          page,
+          "The man on the silver",
+          "Rainbow",
+          "http://localhost:10000"
+        );
         await expect(
           page.locator("p", { hasText: "The man on the silver" })
         ).toBeVisible();
+      });
+
+      describe("When created a  blog", () => {
+        beforeEach(async ({ page }) => {
+          await createBlog(
+            page,
+            "The man on the silver",
+            "Rainbow",
+            "http://localhost:10000"
+          );
+        });
+        test("a blog can be liked", async ({ page, request }) => {
+          await page.getByRole("button", { name: "view" }).click();
+          await page.getByRole("button", { name: "👍" }).click();
+          await expect(page.getByText("36")).toBeVisible();
+        });
       });
     });
   });
