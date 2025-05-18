@@ -70,6 +70,13 @@ describe("Blog app", async () => {
           await page.getByRole("button", { name: "👍" }).click();
           await expect(page.getByText("36")).toBeVisible();
         });
+        test("a blog can be deleted", async ({ page }) => {
+          page.on("dialog", async (dialog) => await dialog.accept("deleted"));
+          await page.getByRole("button", { name: "Delete Blog" }).click();
+          await expect(
+            page.locator("p", { hasText: "The man on the silver" })
+          ).not.toBeVisible();
+        });
       });
     });
   });
