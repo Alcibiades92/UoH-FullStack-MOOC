@@ -41,7 +41,7 @@ const Blog = ({ blog, setBlogs }) => {
     marginBottom: 5,
   }
   return (
-    <div style={blogStyle} data-testid="note">
+    <div style={blogStyle} data-testid="blogg">
       <p>{blog.title}</p>
       <p>{blog.author}</p>
 

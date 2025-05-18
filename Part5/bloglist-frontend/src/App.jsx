@@ -143,9 +143,11 @@ const App = () => {
       <button type="button" onClick={handleLogOut}>
         Log out
       </button>
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} setBlogs={setBlogs} />
-      ))}
+      <div data-testid="blogs">
+        {blogs.map((blog) => (
+          <Blog key={blog.id} blog={blog} setBlogs={setBlogs} />
+        ))}
+      </div>
       <Toggle buttonLabel="New blog">
         <CreateNewBlog addBlog={createBlog} />
       </Toggle>
