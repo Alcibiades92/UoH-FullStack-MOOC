@@ -34,11 +34,24 @@ const reducer = (state = initialState, action) => {
         anecdote.id !== id ? anecdote : changedAnecdote
       );
     }
+    case "CREATE": {
+      return [...state, action.payload];
+    }
     default:
       return state;
   }
 };
 
+// CREATE ANECDOTE ACTION CREAATOR
+
+export const createAnecdote = (anecdote) => {
+  const newObj = {
+    type: "CREATE",
+    payload: asObject(anecdote),
+  };
+  console.log(newObj);
+  return newObj;
+};
 // VOTE ACTION CREATOR
 export const voteFor = (id) => {
   return { type: "VOTE", payload: { id } };
