@@ -10,9 +10,6 @@ export const AnecdoteList = () => {
   );
 
   const dispatch = useDispatch();
-  const vote = (id) => {
-    dispatch(voteFor(id));
-  };
 
   return (
     <div>
@@ -21,7 +18,7 @@ export const AnecdoteList = () => {
           <div>{anecdote.content}</div>
           <div>
             has {anecdote.votes}
-            <button onClick={() => vote(anecdote.id)}>vote</button>
+            <button onClick={() => dispatch(voteFor(anecdote.id))}>vote</button>
           </div>
         </div>
       ))}
