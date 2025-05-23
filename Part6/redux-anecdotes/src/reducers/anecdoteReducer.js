@@ -19,6 +19,8 @@ const asObject = (anecdote) => {
 
 const initialState = anecdotesAtStart.map(asObject);
 
+import { createSlice } from "@reduxjs/toolkit";
+
 const anecdoteReducer = (state = initialState, action) => {
   switch (action.type) {
     case "VOTE": {
