@@ -16,7 +16,7 @@ export const AnecdoteForm = () => {
     dispatch(createNotification(content));
     setTimeout(() => {
       dispatch(clearNotification());
-    }, 5000);
+    }, 5001);
   };
   return (
     <>
