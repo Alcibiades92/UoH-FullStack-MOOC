@@ -1,10 +1,20 @@
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { AnecdoteForm } from "./components/AnecdoteForm";
 import { AnecdoteList } from "./components/AnecdoteList";
 import Filter from "./components/Filter";
 import Notification from "./components/Notification";
+import { useEffect } from "react";
+import anecdotesService from "./services/anecdotes";
+import { setAnecdotes } from "./reducers/anecdoteReducer";
 const App = () => {
-  // const anecdotes = useSelector((state) => state);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    anecdotesService.getAll().then((anecdotes) => {
+      console.log(anecdotes);
+      dispatch(setAnecdotes(anecdotes));
+    });
+  }, []);
 
   return (
     <div>

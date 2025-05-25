@@ -4,6 +4,8 @@ import {
   voteNotification,
   clearNotification,
 } from "../reducers/notificationReducer";
+// import anecdotesService from "../services/anecdotes";
+
 export const AnecdoteList = () => {
   const filter = useSelector((state) => state.filter);
   const filteredAnecdotes = useSelector((state) => state.anecdotes).filter(
