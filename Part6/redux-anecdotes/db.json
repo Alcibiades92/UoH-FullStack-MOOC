@@ -30,7 +30,6 @@
       "id": "98312",
       "votes": 0
     },
-
     {
       "id": "7e6b",
       "content": "This is a test note",
@@ -39,6 +38,11 @@
     {
       "id": "4fc3",
       "content": "Always march ahead",
+      "votes": 0
+    },
+    {
+      "id": "5d29",
+      "content": "Always with me",
       "votes": 0
     }
   ]
