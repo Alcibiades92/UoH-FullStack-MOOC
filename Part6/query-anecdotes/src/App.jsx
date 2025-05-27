@@ -3,13 +3,15 @@ import Notification from "./components/Notification";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createAnecdote, getAnecdotes } from "./requests";
 import { updateAnecdote } from "./requests";
+import { useNotificationDispatch } from "./context/NotificationContext";
 const App = () => {
+  const dispatchNotification = useNotificationDispatch();
   const queryClient = useQueryClient();
   const handleVote = async (anecdote) => {
     const anecdoteToUpdate = queryClient
       .getQueryData(["anecdotes"])
       .find((anec) => anecdote.id === anec.id);
-    console.log(anecdoteToUpdate);
+
     const updatedAnecdote = {
       ...anecdoteToUpdate,
       votes: anecdoteToUpdate.votes + 1,
@@ -28,6 +30,11 @@ const App = () => {
           anecdote.id === updatedAnecdote.id ? updatedAnecdote : anecdote
         );
       });
+
+      dispatchNotification({ type: "VOTE", payload: updatedAnecdote.content });
+      setTimeout(() => {
+        dispatchNotification({ type: "" });
+      }, 5000);
     },
   });
   const result = useQuery({
@@ -41,7 +48,7 @@ const App = () => {
   if (result.isError) {
     return <span>{result.error.message}</span>;
   }
-  console.log(result);
+
   const anecdotes = result.data;
   return (
     <div>
