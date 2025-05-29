@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { Link, Routes, Route } from "react-router-dom";
+import {
+  Link,
+  Routes,
+  Route,
+  useParams,
+  useNavigate,
+  Navigate,
+  useMatch,
+} from "react-router-dom";
 
 const Menu = () => {
   const padding = {
@@ -26,12 +34,33 @@ const AnecdoteList = ({ anecdotes }) => (
     <h2>Anecdotes</h2>
     <ul>
       {anecdotes.map((anecdote) => (
-        <li key={anecdote.id}>{anecdote.content}</li>
+        <li key={anecdote.id}>
+          <Link to={`/anecdotes/${anecdote.id}`}>{anecdote.content}</Link>
+        </li>
       ))}
     </ul>
   </div>
 );
+const Anecdote = ({ anecdotes }) => {
+  const id = useParams().id;
+  const anecdote = anecdotes.find((anec) => Number(id) === anec.id);
+  return (
+    <div>
+      <h2>
+        {anecdote.content} by {anecdote.author}
+      </h2>
+      <p>has {anecdote.votes} votes</p>
+      <p>
+        for more info see<a href={anecdote.info}>{anecdote.info}</a>
+      </p>
+    </div>
+  );
+};
 
+const Notification = ({ notification }) => {
+  if (!notification) return null;
+  return <div>{notification}</div>;
+};
 const About = () => (
   <div>
     <h2>About anecdote app</h2>
@@ -66,6 +95,7 @@ const Footer = () => (
 );
 
 const CreateNew = (props) => {
+  const navigate = useNavigate();
   const [content, setContent] = useState("");
   const [author, setAuthor] = useState("");
   const [info, setInfo] = useState("");
@@ -78,6 +108,11 @@ const CreateNew = (props) => {
       info,
       votes: 0,
     });
+    navigate("/");
+    props.handleNotification(`Created a new anecdote : ${content}`);
+    setTimeout(() => {
+      props.handleNotification("");
+    }, 5000);
   };
 
   return (
@@ -108,13 +143,14 @@ const CreateNew = (props) => {
             onChange={(e) => setInfo(e.target.value)}
           />
         </div>
-        <button>create</button>
+        <button type="submit">create</button>
       </form>
     </div>
   );
 };
 
 const App = () => {
+  const [notification, setNotification] = useState("");
   const [anecdotes, setAnecdotes] = useState([
     {
       content: "If it hurts, do it more often",
@@ -131,8 +167,6 @@ const App = () => {
       id: 2,
     },
   ]);
-
-  const [notification, setNotification] = useState("");
 
   const addNew = (anecdote) => {
     anecdote.id = Math.round(Math.random() * 10000);
@@ -156,11 +190,22 @@ const App = () => {
     <div>
       <h1>Software anecdotes</h1>
       <Menu />
+      {notification && <Notification notification={notification} />}
       <Routes>
+        {/* <Route path='/anecdotes/:id' element={<Anecdote/>}/> */}
         <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
         <Route path="/about" element={<About />} />
+        <Route
+          path="/anecdotes/:id"
+          element={<Anecdote anecdotes={anecdotes} />}
+        />
 
-        <Route path="/create" element={<CreateNew />} />
+        <Route
+          path="/create"
+          element={
+            <CreateNew addNew={addNew} handleNotification={setNotification} />
+          }
+        />
       </Routes>
       <Footer />
     </div>
