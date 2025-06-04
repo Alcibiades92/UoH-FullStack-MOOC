@@ -5,12 +5,20 @@ import loginService from './services/login'
 import CreateNewBlog from './components/CreateNewBlog'
 import Message from './components/Message'
 import Toggle from './components/Toggle'
-import { useDispatch } from 'react-redux'
-import { createNotification } from './reducer/notificationReducer'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  createNotification,
+  createVanishNotification,
+} from './reducer/notificationReducer'
+import {
+  createNewBlog,
+  setBlogs,
+  inititializeBlogs,
+} from './reducer/blogReducer'
 
 const App = () => {
   const dispatch = useDispatch()
-  const [blogs, setBlogs] = useState([])
+
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -24,21 +32,14 @@ const App = () => {
       setUsername('')
       setPassword('')
       blogService.setToken(userr.token)
-
-      dispatch(createNotification({ content: 'Welcome', success: true }))
-      setTimeout(() => {
-        dispatch(createNotification({ content: '' }))
-      }, 3000)
+      dispatch(createVanishNotification({ content: 'Welcome', success: true }))
     } catch (exception) {
       dispatch(
-        createNotification({
+        createVanishNotification({
           content: exception.response.data.error,
           success: false,
         })
       )
-      setTimeout(() => {
-        dispatch(createNotification({ content: '', success: false }))
-      }, 5000)
     }
   }
   const handleLogOut = (event) => {
@@ -48,21 +49,25 @@ const App = () => {
       setUser(null)
       blogService.setToken(null)
       dispatch(
-        createNotification({ content: 'Logged out complete', success: true })
+        createVanishNotification({
+          content: 'Logged out complete',
+          success: true,
+        })
       )
-      setTimeout(() => {
-        dispatch(createNotification({ content: '', success: true }))
-      }, 5000)
     } catch (exception) {
       dispatch(
-        createNotification({ content: 'Error logging out', success: false })
+        createVanishNotification({
+          content: 'Error logging out',
+          success: false,
+        })
       )
     }
   }
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
+    dispatch(inititializeBlogs())
   }, [])
+  const blogs = useSelector((state) => state.blogs)
   useEffect(() => {
     const loggedInJSON = window.localStorage.getItem('loggedInUser')
     if (loggedInJSON) {
@@ -80,34 +85,25 @@ const App = () => {
         url: obj.url,
         likes: 35,
       }
-      await blogService.create(newObject)
-      const blogs = await blogService.getAll()
-      console.log(12)
+
+      const newBl = await dispatch(createNewBlog(newObject))
+
+      console.log(newBl)
       dispatch(
-        createNotification({
+        createVanishNotification({
           // content: '123',
-          content: `New blog ${newObject.title} by ${newObject.author}`,
+          content: `New blog ${newBl.title} by ${newBl.author}`,
           success: true,
         })
       )
-
-      setBlogs(blogs)
-      setTimeout(() => {
-        dispatch(createNotification({ content: '', success: true }))
-      }, 3000)
     } catch (exception) {
       console.log(exception)
-
       dispatch(
-        createNotification({
+        createVanishNotification({
           content: exception.response.data.error,
           success: false,
         })
       )
-
-      setTimeout(() => {
-        dispatch(createNotification({ content: '' }))
-      }, 3000)
     }
   }
   const loginForm = () => {
