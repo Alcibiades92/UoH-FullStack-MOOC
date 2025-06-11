@@ -15,23 +15,22 @@ import {
   setBlogs,
   inititializeBlogs,
 } from './reducer/blogReducer'
+import { LoginAction, LogOutAction, setUser } from './reducer/userReducer'
 
 const App = () => {
   const dispatch = useDispatch()
-
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
+  const user = useSelector((state) => state.user.user)
 
   const handleSubmit = async (event) => {
     event.preventDefault()
+
     try {
-      const userr = await loginService.login({ username, password })
-      window.localStorage.setItem('loggedInUser', JSON.stringify(userr))
-      setUser(userr)
-      setUsername('')
-      setPassword('')
-      blogService.setToken(userr.token)
+      const password = event.target.password.value
+      const username = event.target.username.value
+      console.log(password, username)
+
+      const userr = await dispatch(LoginAction(username, password))
+
       dispatch(createVanishNotification({ content: 'Welcome', success: true }))
     } catch (exception) {
       dispatch(
@@ -45,9 +44,9 @@ const App = () => {
   const handleLogOut = (event) => {
     try {
       event.preventDefault()
-      window.localStorage.removeItem('loggedInUser')
-      setUser(null)
-      blogService.setToken(null)
+
+      dispatch(LogOutAction())
+
       dispatch(
         createVanishNotification({
           content: 'Logged out complete',
@@ -72,7 +71,7 @@ const App = () => {
     const loggedInJSON = window.localStorage.getItem('loggedInUser')
     if (loggedInJSON) {
       const user = JSON.parse(loggedInJSON)
-      setUser(user)
+      dispatch(setUser(user))
       blogService.setToken(user.token)
     }
   }, [])
@@ -111,35 +110,19 @@ const App = () => {
       <form onSubmit={handleSubmit}>
         <div>
           username
-          <input
-            name="Username"
-            type="text"
-            data-testid="username"
-            value={username}
-            onChange={({ target }) => {
-              setUsername(target.value)
-            }}
-          />
+          <input name="username" type="text" data-testid="username" />
         </div>
 
         <div>
           password
-          <input
-            name="password"
-            type="password"
-            value={password}
-            data-testid="password"
-            onChange={({ target }) => {
-              setPassword(target.value)
-            }}
-          />
+          <input name="password" type="password" data-testid="password" />
         </div>
         <button type="submit">Log in</button>
       </form>
     )
   }
 
-  if (user === null) {
+  if (!user) {
     return (
       <div>
         <h2>Log in to the application</h2>
