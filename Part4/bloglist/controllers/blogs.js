@@ -1,25 +1,28 @@
 const blogRouter = require("express").Router();
 const Blog = require("../models/blog.js");
 const User = require("../models/user.js");
+const Comment = require("../models/comment.js");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const middleware = require("../utils/middleware.js");
+
 // Retrive token from the authorization headder or return null
 
 blogRouter.get("/", async (request, response, next) => {
   try {
-    const blogs = await Blog.find({}).populate("user", {
-      username: 1,
-      name: 1,
-    });
+    const blogs = await Blog.find({})
+      .populate("user", {
+        username: 1,
+        name: 1,
+      })
+      .populate("comments", {
+        comment: 1,
+      });
     // http://localhost:3003/api/blogs});
     response.json(blogs);
   } catch (exception) {
     next(exception);
   }
-  // Blog.find({}).then((blogs) => {
-  //   response.json(blogs);
-  // });
 });
 
 blogRouter.post(
@@ -30,6 +33,7 @@ blogRouter.post(
     const body = request.body;
 
     const user = request.user;
+    console.log(user);
     if (!user) {
       return response.status(401).json({ error: "token invalid" });
     }
@@ -164,4 +168,35 @@ blogRouter.put(
   }
 );
 
+blogRouter.post("/:id/comments", async (request, response, next) => {
+  const body = request.body;
+
+  const BlogId = null || request.params.id;
+  const blogToAddComment = await Blog.findById(BlogId);
+  const commentToAdd = new Comment({
+    comment: body.comment,
+    blog: blogToAddComment._id,
+  });
+
+  try {
+    const savedComment = await commentToAdd.save();
+    blogToAddComment.comments = blogToAddComment.comments.concat(
+      savedComment._id
+    );
+    const savedBlog = await blogToAddComment.save();
+    const populatedBlog = await Blog.findById(BlogId)
+      .populate("user", {
+        username: 1,
+        name: 1,
+      })
+      .populate("comments", {
+        comment: 1,
+      });
+    console.log(savedBlog);
+    console.log(populatedBlog);
+    response.status(201).json(populatedBlog);
+  } catch (exception) {
+    next(exception);
+  }
+});
 module.exports = blogRouter;

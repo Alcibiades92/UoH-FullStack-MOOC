@@ -26,12 +26,14 @@ export const LoginAction = (username, password) => {
     dispatch(setUsername(username))
     dispatch(setPassword(password))
     const state = getState()
+    console.log(state)
     const user = state.user
 
     const userr = await loginService.login({
       username: user.username,
       password: user.password,
     })
+    console.log(userr)
     window.localStorage.setItem('loggedInUser', JSON.stringify(userr))
     blogService.setToken(userr.token)
 

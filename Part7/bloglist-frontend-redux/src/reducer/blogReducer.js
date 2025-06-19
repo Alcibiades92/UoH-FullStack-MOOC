@@ -33,8 +33,9 @@ export const inititializeBlogs = () => {
 export const createNewBlog = (newObject) => {
   return async (dispatch, getState) => {
     const newBlog = await blogService.create(newObject)
-    console.log(newBlog)
-    dispatch(appendBlog(newBlog))
+    const allBlogs = await blogService.getAll()
+    dispatch(setBlogs(allBlogs))
+
     return newBlog
   }
 }
@@ -48,6 +49,13 @@ export const deleteOneBlog = (id) => {
 export const UpdateOneBlog = (blog) => {
   return async (dispatch, getState) => {
     const updatedBlog = await blogService.update(blog.id, blog)
+    dispatch(updateBlog(updatedBlog))
+  }
+}
+export const AddOneComment = (id, commentObject) => {
+  return async (dispatch, getState) => {
+    const updatedBlog = await blogService.createComment(id, commentObject)
+    console.log(updatedBlog)
     dispatch(updateBlog(updatedBlog))
   }
 }

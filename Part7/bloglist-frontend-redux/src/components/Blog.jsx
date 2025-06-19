@@ -5,30 +5,10 @@ import { useDispatch } from 'react-redux'
 import { createVanishNotification } from '../reducer/notificationReducer'
 import { setBlogs } from '../reducer/blogReducer'
 import { deleteOneBlog, UpdateOneBlog } from '../reducer/blogReducer'
+import { Link } from 'react-router-dom'
 const Blog = ({ blog }) => {
-  const [showAll, setShowAll] = useState(false)
   const dispatch = useDispatch()
 
-  const toggleShowAll = () => {
-    setShowAll((showAll) => !showAll)
-  }
-  const handleLike = async () => {
-    const blogToSend = {
-      ...blog,
-      likes: blog.likes + 1,
-      // title: blog.title,
-      // author: blog.author,
-      // url: blog.url,
-      // id: blog.id,
-      // user: blog.user,
-      // likes: blog.likes + 1,
-    }
-    dispatch(UpdateOneBlog(blogToSend))
-    // const response = await BlogService.update(blog.id, blogToSend)
-    // console.log(response)
-    // const blogs = await BlogService.getAll()
-    // dispatch(setBlogs(blogs))
-  }
   const handleDelete = async () => {
     const decision = window.confirm(
       `Remove blog ${blog.title} by ${blog.author}`
@@ -52,30 +32,18 @@ const Blog = ({ blog }) => {
   }
   return (
     <div style={blogStyle} data-testid="blogg">
-      <p>{blog.title}</p>
-      <p>{blog.author}</p>
+      <p>
+        <Link to={`/blogs/${blog.id}`}>
+          {blog.title} authored by {blog.author} ,uploaded by {blog.user.name}
+        </Link>
+      </p>
 
-      {showAll && <Button blog={blog} handleLike={handleLike} />}
-      <button onClick={toggleShowAll} data-testid="show">
-        {showAll ? 'hide' : 'view'}
-      </button>
       <button
         onClick={handleDelete}
         style={{ border: '2px solid red', fontWeight: '600' }}
       >
         Delete Blog
       </button>
-    </div>
-  )
-}
-
-export const Button = ({ blog, handleLike }) => {
-  return (
-    <div>
-      <p>{blog.url}</p>
-      <p>
-        {blog.likes} <button onClick={handleLike}>👍</button>
-      </p>
     </div>
   )
 }
