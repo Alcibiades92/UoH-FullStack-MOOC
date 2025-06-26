@@ -34,6 +34,11 @@ const update = async (id, newObject) => {
   return response.data
 }
 
+const updateLikes = async (id, newObject) => {
+  const response = await axios.patch(`${baseUrl}/${id}`, newObject)
+  return response.data
+}
+
 const deleteOne = async (id) => {
   const config = {
     headers: {
@@ -49,4 +54,12 @@ const createComment = async (id, newObject) => {
   return response.data
 }
 
-export default { getAll, setToken, create, update, deleteOne, createComment }
+export default {
+  getAll,
+  setToken,
+  create,
+  update,
+  deleteOne,
+  createComment,
+  updateLikes,
+}

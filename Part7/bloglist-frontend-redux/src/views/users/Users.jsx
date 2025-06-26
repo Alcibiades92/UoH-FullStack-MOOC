@@ -2,50 +2,48 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { Link, Routes, Route } from 'react-router-dom'
 import SingleUser from './SingleUser'
+import {
+  TableContainer,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Paper,
+} from '@mui/material'
 
 const Users = () => {
-  const blogs = useSelector((state) => state.blogs)
-  console.log(blogs)
+  const users = useSelector((state) => state.users)
 
   //
-  const blogNumbers = blogs.reduce((acc, blog) => {
-    if (!acc[blog.user.name]) {
-      acc[blog.user.name] = {
-        id: blog.user.id,
-        blogCount: 1,
-      }
-    } else {
-      acc[blog.user.name].blogCount += 1
-    }
-
-    return acc
-  }, {})
-
-  const usersArray = Object.entries(blogNumbers)
-
-  if (usersArray?.length === 0) return null
 
   return (
-    <table>
-      <thead>
-        <tr>
-          <td>Users</td>
-          <td>Blogs created</td>
-        </tr>
-      </thead>
-      <tbody>
-        {usersArray.map((user) => (
-          <tr key={user[1].id}>
-            <td>
-              <Link to={`/users/${user[1].id}`} element={<SingleUser />}>
-                {user[0]}
-              </Link>
-            </td>
-            <td>{user[1].blogCount}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <TableContainer component={Paper}>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>
+              <strong>Users</strong>
+            </TableCell>
+            <TableCell>
+              <strong>Blogs created</strong>
+            </TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {users.map((user) => (
+            <TableRow key={user.id}>
+              <TableCell>
+                <Link to={`/users/${user.id}`} element={<SingleUser />}>
+                  {user.username}
+                </Link>
+              </TableCell>
+              <TableCell>{user.blogs.length}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   )
 }
 

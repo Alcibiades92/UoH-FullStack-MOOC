@@ -1,5 +1,7 @@
 import { current, createSlice } from '@reduxjs/toolkit'
 import blogService from '../services/blogs'
+import { appendComment } from '../reducer/commentReducer'
+import { initializeUsers } from './usersReducer'
 
 const blogSlice = createSlice({
   name: 'blogs',
@@ -9,7 +11,6 @@ const blogSlice = createSlice({
       return action.payload
     },
     appendBlog(state, action) {
-      console.log(current(state))
       state.push(action.payload)
     },
     deleteBlog(state, action) {
@@ -40,23 +41,33 @@ export const createNewBlog = (newObject) => {
   }
 }
 export const deleteOneBlog = (id) => {
-  console.log(id)
   return async (dispatch, getState) => {
     await blogService.deleteOne(id.id)
     dispatch(deleteBlog(id))
+    dispatch(initializeUsers())
   }
 }
 export const UpdateOneBlog = (blog) => {
   return async (dispatch, getState) => {
     const updatedBlog = await blogService.update(blog.id, blog)
     dispatch(updateBlog(updatedBlog))
+    dispatch(initializeUsers())
+  }
+}
+
+//  handling likes
+export const UpdateLikes = (blog) => {
+  return async (dispatch, getState) => {
+    const updatedBlog = await blogService.updateLikes(blog.id, blog)
+    dispatch(updateBlog(updatedBlog))
   }
 }
 export const AddOneComment = (id, commentObject) => {
   return async (dispatch, getState) => {
     const updatedBlog = await blogService.createComment(id, commentObject)
-    console.log(updatedBlog)
-    dispatch(updateBlog(updatedBlog))
+
+    dispatch(updateBlog(updatedBlog.populatedBlog))
+    dispatch(appendComment(updatedBlog.savedComment))
   }
 }
 export default blogSlice.reducer

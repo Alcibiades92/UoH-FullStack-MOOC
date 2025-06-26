@@ -100,29 +100,22 @@ blogRouter.patch(
   middleware.userExtractor,
   async (request, response, next) => {
     // if it misses respond
-    if (!request.token) {
-      return response.status(401).json({
-        error: "Token missing",
-      });
-    }
+
     const id = null || request.params.id;
     const blog = await Blog.findById(id);
     if (!blog) {
       return response.status(404).end();
     }
-    const user = request.user;
 
     const updates = request.body.likes;
-    if (!(user.toString() === blog.user.toString())) {
-      console.log("Unauthorized");
-      return response.status(401).send({ error: "Not Authorized" });
-    }
+
     try {
       const updatedBlog = await Blog.findByIdAndUpdate(
         id,
         { likes: updates },
         { new: true, runValidators: true, upsert: false }
-      );
+      ).populate("user", { username: 1, name: 1 });
+
       response.status(200).json(updatedBlog);
     } catch (exception) {
       next(exception);
@@ -160,8 +153,14 @@ blogRouter.put(
       BlogToBeUpdated.likes = body.likes;
       // BlogToBeUpdated.user = body.user;
 
-      await BlogToBeUpdated.save();
-      response.json(BlogToBeUpdated);
+      const savedBlog = await BlogToBeUpdated.save();
+      const populatedBlog = await Blog.findById(savedBlog._id).populate(
+        "user",
+        { username: 1, name: 1 }
+      );
+
+      response.json(populatedBlog);
+      // response.json(BlogToBeUpdated);
     } catch (exception) {
       next(exception);
     }
@@ -183,20 +182,14 @@ blogRouter.post("/:id/comments", async (request, response, next) => {
     blogToAddComment.comments = blogToAddComment.comments.concat(
       savedComment._id
     );
+
     const savedBlog = await blogToAddComment.save();
-    const populatedBlog = await Blog.findById(BlogId)
-      .populate("user", {
-        username: 1,
-        name: 1,
-      })
-      .populate("comments", {
-        comment: 1,
-      });
-    console.log(savedBlog);
-    console.log(populatedBlog);
-    response.status(201).json(populatedBlog);
+    const populatedBlog = await Blog.findById(BlogId);
+
+    response.status(201).json({ populatedBlog, savedComment });
   } catch (exception) {
     next(exception);
   }
 });
+
 module.exports = blogRouter;

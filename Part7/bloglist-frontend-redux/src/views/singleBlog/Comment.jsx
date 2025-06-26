@@ -7,30 +7,50 @@ import {
   UpdateOneBlog,
   AddOneComment,
 } from '../../reducer/blogReducer'
+import { inititializeComments } from '../../reducer/commentReducer'
+import {
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  Divider,
+} from '@mui/material'
 const Comment = ({ id }) => {
   const dispatch = useDispatch()
-  // const id =
+  const comments = useSelector((state) => state.comments).filter((comment) => {
+    return comment.blog === id
+  })
+
   const singleBlog = useSelector((state) => state.blogs).find((blog) => {
     return blog.id === id
   })
+
   const handleAddComment = async (event) => {
     event.preventDefault()
     const commentToAdd = { comment: event.target.comment.value }
     dispatch(AddOneComment(singleBlog.id, commentToAdd))
+    event.target.comment.value = ''
+
     // await BlogService.createComment
   }
 
   return (
     <div>
-      <ul>
+      <List>
         {singleBlog.comments.length === 0 && (
           <div>No comments yet.You may add</div>
         )}
-        {singleBlog.comments.map((comment) => {
-          console.log(comment)
-          return <li key={comment.id}>{comment.comment}</li>
+        {comments.map((comment) => {
+          return (
+            <>
+              <Divider />
+              <ListItem key={comment.id}>
+                <ListItemText>{comment.comment}</ListItemText>
+              </ListItem>
+            </>
+          )
         })}
-      </ul>
+      </List>
       <form onSubmit={handleAddComment}>
         <input type="text" name="comment"></input>
         <button type="submit">Add comment</button>

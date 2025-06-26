@@ -12,6 +12,9 @@ function CreateNewBlog({ addBlog }) {
   const handleSubmit = async (event) => {
     event.preventDefault()
     addBlog({ author, title, url })
+    setAuthor('')
+    setTitle('')
+    setUrl('')
   }
   return (
     <div>

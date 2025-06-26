@@ -6,6 +6,10 @@ import { createVanishNotification } from '../reducer/notificationReducer'
 import { setBlogs } from '../reducer/blogReducer'
 import { deleteOneBlog, UpdateOneBlog } from '../reducer/blogReducer'
 import { Link } from 'react-router-dom'
+
+// MAterial UI
+import { ListItem, ListItemIcon, ListItemButton } from '@mui/material'
+import InboxIcon from '@mui/icons-material/Inbox'
 const Blog = ({ blog }) => {
   const dispatch = useDispatch()
 
@@ -31,20 +35,29 @@ const Blog = ({ blog }) => {
     marginBottom: 5,
   }
   return (
-    <div style={blogStyle} data-testid="blogg">
-      <p>
-        <Link to={`/blogs/${blog.id}`}>
-          {blog.title} authored by {blog.author} ,uploaded by {blog.user.name}
-        </Link>
-      </p>
+    <ListItem>
+      <Link to={`/blogs/${blog.id}`}>
+        {blog.title} authored by {blog.author} ,uploaded by {blog.user.name}
+      </Link>
 
-      <button
+      <ListItemButton
         onClick={handleDelete}
-        style={{ border: '2px solid red', fontWeight: '600' }}
+        sx={{
+          width: 'auto',
+          padding: '4px 8px',
+          color: 'error.main',
+          borderRadius: 1,
+          display: 'inline-block',
+          '&:hover': {
+            backgroundColor: 'error.light',
+            color: 'white',
+          },
+        }}
+        component="span"
       >
         Delete Blog
-      </button>
-    </div>
+      </ListItemButton>
+    </ListItem>
   )
 }
 

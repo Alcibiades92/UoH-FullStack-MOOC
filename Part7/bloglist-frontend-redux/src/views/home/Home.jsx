@@ -15,8 +15,14 @@ import {
   setBlogs,
   inititializeBlogs,
 } from '../../reducer/blogReducer'
+import { inititializeComments } from '../../reducer/commentReducer'
 import { LoginAction, LogOutAction, setUser } from '../../reducer/userReducer'
 
+import { initializeUsers } from '../../reducer/usersReducer'
+import { Link } from 'react-router-dom'
+// style imports
+
+import { TextField, Button, Box, Container, List } from '@mui/material'
 const Home = () => {
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user.user)
@@ -27,17 +33,22 @@ const Home = () => {
     try {
       const password = event.target.password.value
       const username = event.target.username.value
-      console.log(password, username)
 
       const userr = await dispatch(LoginAction(username, password))
-      console.log('userr is ', userr)
 
-      dispatch(createVanishNotification({ content: 'Welcome', success: true }))
+      dispatch(
+        createVanishNotification({
+          content: 'Welcome',
+          success: true,
+          severity: 'success',
+        })
+      )
     } catch (exception) {
       dispatch(
         createVanishNotification({
           content: exception.response.data.error,
           success: false,
+          severity: 'error',
         })
       )
     }
@@ -52,6 +63,7 @@ const Home = () => {
         createVanishNotification({
           content: 'Logged out complete',
           success: true,
+          severity: 'success',
         })
       )
     } catch (exception) {
@@ -59,6 +71,7 @@ const Home = () => {
         createVanishNotification({
           content: 'Error logging out',
           success: false,
+          severity: 'error',
         })
       )
     }
@@ -66,9 +79,12 @@ const Home = () => {
 
   useEffect(() => {
     dispatch(inititializeBlogs())
+    dispatch(inititializeComments())
+    dispatch(initializeUsers())
   }, [])
   const blogs = useSelector((state) => state.blogs)
-  console.log(blogs)
+  // delete after
+
   useEffect(() => {
     const loggedInJSON = window.localStorage.getItem('loggedInUser')
     if (loggedInJSON) {
@@ -88,38 +104,59 @@ const Home = () => {
       }
 
       const newBl = await dispatch(createNewBlog(newObject))
-
-      console.log(newBl)
+      dispatch(initializeUsers())
       dispatch(
         createVanishNotification({
           // content: '123',
           content: `New blog ${newBl.title} by ${newBl.author}`,
           success: true,
+          severity: 'success',
         })
       )
     } catch (exception) {
-      console.log(exception)
       dispatch(
         createVanishNotification({
           content: exception.response.data.error,
           success: false,
+          severity: 'error',
         })
       )
     }
   }
+
+  // Style LoginForm
   const loginForm = () => {
     return (
       <form onSubmit={handleSubmit}>
         <div>
-          username
-          <input name="username" type="text" data-testid="username" />
+          <TextField
+            label="username"
+            name="username"
+            type="text"
+            data-testid="username"
+          />
         </div>
 
         <div>
-          password
-          <input name="password" type="password" data-testid="password" />
+          <TextField
+            label="Password"
+            name="password"
+            type="password"
+            data-testid="password"
+          />
         </div>
-        <button type="submit">Log in</button>
+        <Button variant="contained" color="primary" type="submit">
+          Log in
+        </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          type="submit"
+          component={Link}
+          to="/signup"
+        >
+          Sign up
+        </Button>
       </form>
     )
   }
@@ -144,9 +181,13 @@ const Home = () => {
         Log out
       </button>
       <div data-testid="blogs">
-        {blogs.map((blog) => (
-          <Blog key={blog.id} blog={blog} setBlogs={setBlogs} />
-        ))}
+        <List
+          sx={{ width: '100%', maxWidth: '100%', bgcolor: 'background.paper' }}
+        >
+          {blogs.map((blog) => (
+            <Blog key={blog.id} blog={blog} setBlogs={setBlogs} />
+          ))}
+        </List>
       </div>
 
       <Toggle buttonLabel="New blog">
